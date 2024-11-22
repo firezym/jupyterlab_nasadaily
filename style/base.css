@@ -53,12 +53,14 @@
   padding: 5px; /* 内边距 */
   text-align: left;
   font-size: 16px;
+
   /* overflow-y: scroll; /* 允许纵轴滚动 */
+
   /* max-height: 100px; /* 设置最大高度，超出部分滚动 */
 }
 
 .nasa-copyright a {
-  color: rgb(0, 150, 255); /* 设置链接颜色为蓝色 */
+  color: rgb(0 150 255); /* 设置链接颜色为蓝色 */
   text-decoration: underline; /* 添加下划线 */
 }
 
@@ -119,7 +121,7 @@
   font-size: 14px;
   color: #333;
   background-color: #f9f9f9;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 1px 3px rgb(0 0 0 / 10%);
   transition:
     border-color 0.3s,
     box-shadow 0.3s;
@@ -128,5 +130,5 @@
 .jp-Toolbar-dateInput:focus {
   border-color: #66afe9;
   outline: none;
-  box-shadow: 0 0 8px rgba(102, 175, 233, 0.6);
+  box-shadow: 0 0 8px rgb(102 175 233 / 60%);
 }
