@@ -388,17 +388,6 @@ function activate(
       }
       widget.content.updateNASAImage()
 
-      // Add 'Previous Day' button
-      const prevButton = new ToolbarButton({
-        label: 'Prev Day',
-        icon: caretLeftIcon,
-        onClick: () => {
-          widget.content.currentDate.setDate(widget.content.currentDate.getDate() - 1);
-          widget.content.updateNASAImage(widget.content.formatDate(widget.content.currentDate));
-        }
-      });
-      widget.toolbar.addItem('previous', prevButton);
-
       // Add 'Today' button
       const todayButton = new ToolbarButton({
         label: 'Today',
@@ -409,6 +398,17 @@ function activate(
         }
       });
       widget.toolbar.addItem('today', todayButton);
+
+      // Add 'Previous Day' button
+      const prevButton = new ToolbarButton({
+        label: 'Prev Day',
+        icon: caretLeftIcon,
+        onClick: () => {
+          widget.content.currentDate.setDate(widget.content.currentDate.getDate() - 1);
+          widget.content.updateNASAImage(widget.content.formatDate(widget.content.currentDate));
+        }
+      });
+      widget.toolbar.addItem('previous', prevButton);
 
       // Add 'Next Day' button
       const nextButton = new ToolbarButton({
