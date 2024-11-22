@@ -257,6 +257,17 @@ class NASAWidget extends Widget {
         <a href="${data.hdurl}" target="_blank">HD Image Link</a>
         `.replace(/[\r\n]/g,'')
       }
+    } else if (data.media_type === 'video') {
+      console.log('This is a video. Please refresh again.')
+      this.imgtitle.innerHTML =`
+        <span style="color: cyan; font-weight: bold;">${data.date||''}</span> :
+        <span style="color: skyblue; font-weight: bold;">${data.title||''}</span> || 
+        <a href="${data.url}" target="_blank" style="color: blue; font-weight: bold;">Video Link</a> <br>
+        ${data.explanation||''}
+        `.replace(/[\r\n]/g,'')
+      this.refreshbutton.spinner.className = 'fa fa-sync-alt'
+      this.spinner.style.display = 'none'
+      this.imgtitle.style.display = ''
     } else {
       this.imgtitle.innerText =
         'This random fetch is not an image. Please refresh again.'
