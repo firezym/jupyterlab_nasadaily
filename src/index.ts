@@ -86,6 +86,9 @@ class NASAWidget extends Widget {
   // API key for the NASA API
   private apiKey: string
 
+  // Add currentDate property
+  public currentDate: Date;
+
   /**
    * Construct a new NASA widget.
    */
@@ -133,6 +136,14 @@ class NASAWidget extends Widget {
       // 图片加载完成后的操作
       this.onImageLoaded()
     }
+
+    // Initialize currentDate
+    this.currentDate = new Date();
+  }
+
+  // Add formatDate method
+  public formatDate(date: Date): string {
+    return date.toISOString().slice(0, 10);
   }
 
   private _onRefresh(emitter: CountButtonWidget, count: ICount): void {
@@ -156,12 +167,23 @@ class NASAWidget extends Widget {
   /**
    * Handle update requests for the widget.
    */
-  async updateNASAImage(): Promise<void> {
+  async updateNASAImage(date?: string): Promise<void> {
+
+    // If date is provided, use it; else generate random date
+    let fetchDate: string;
+    if (date) {
+      fetchDate = date;
+      this.currentDate = new Date(date);
+    } else {
+      fetchDate = this.randomDate();
+      this.currentDate = new Date(fetchDate);
+    }
+
     // Use DEMO_KEY if no API key is provided
     const response = await fetch(
       `https://api.nasa.gov/planetary/apod?api_key=${
         this.apiKey
-      }&date=${this.randomDate()}`
+      }&date=${fetchDate}`
     )
     // 显示旋转图标
     this.refreshbutton.spinner.className = 'fa fa-sync-alt fa-spin' // 开始旋转
@@ -289,6 +311,36 @@ function activate(
         onClick: () => widget.content.updateNASAImage()
       })
       widget.toolbar.addItem('refresh', refreshButton)
+
+      // Add 'Today' button
+      const todayButton = new ToolbarButton({
+        label: 'Today',
+        onClick: () => {
+          const today = new Date();
+          widget.content.updateNASAImage(widget.content.formatDate(today));
+        }
+      });
+      widget.toolbar.addItem('today', todayButton);
+
+      // Add 'Previous Day' button
+      const prevButton = new ToolbarButton({
+        label: 'Previous Day',
+        onClick: () => {
+          widget.content.currentDate.setDate(widget.content.currentDate.getDate() - 1);
+          widget.content.updateNASAImage(widget.content.formatDate(widget.content.currentDate));
+        }
+      });
+      widget.toolbar.addItem('previous', prevButton);
+
+      // Add 'Next Day' button
+      const nextButton = new ToolbarButton({
+        label: 'Next Day',
+        onClick: () => {
+          widget.content.currentDate.setDate(widget.content.currentDate.getDate() + 1);
+          widget.content.updateNASAImage(widget.content.formatDate(widget.content.currentDate));
+        }
+      });
+      widget.toolbar.addItem('next', nextButton);
 
       // Activate the widget
       app.shell.activateById(widget.id)
