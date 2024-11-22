@@ -69,6 +69,7 @@ interface INASAResponse {
   media_type: 'video' | 'image'
   title: string
   url: string
+  hdurl: string
 }
 
 class NASAWidget extends Widget {
@@ -194,8 +195,14 @@ class NASAWidget extends Widget {
       this.imgtitle.innerText = data.title
       // 如果copyright或explainnation一个不为空，则显示
       // 去掉换行符
-      if (data.copyright || data.explanation) {
-        this.copyright.innerText = `${data.explanation||''} || Copyright: ${data.copyright||'NASA'}`.replace(/[\r\n]/g,'')
+      if (data.date || data.copyright || data.explanation || data.url || data.hdurl) {
+        this.copyright.innerHTML = `
+        <span style="color: cyan; font-weight: bold;">${data.date||''}</span> : 
+        ${data.explanation||''} || 
+        <em>Copyright: ${data.copyright||'NASA'}</em> || 
+        <a href="${data.url}" target="_blank">Image Link</a> ||
+        <a href="${data.hdurl}" target="_blank">HD Image Link</a>
+        `.replace(/[\r\n]/g,'')
       }
     } else {
       this.imgtitle.innerText =

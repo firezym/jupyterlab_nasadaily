@@ -56,6 +56,11 @@
     /* overflow-y: scroll; /* 允许纵轴滚动 */
     /* max-height: 100px; /* 设置最大高度，超出部分滚动 */
   }
+
+  .nasa-copyright a {
+    color: rgb(0, 150, 255); /* 设置链接颜色为蓝色 */
+    text-decoration: underline; /* 添加下划线 */
+  }
   
   .nasa-widget .fa-spinner {
     /* .nasa-widget .fa-rocket { */
