@@ -10,6 +10,12 @@
       "title": "NASA Daily Image API Key",
       "description": "Your API key for NASA data access.",
       "default": "DEMO_KEY"
+    },
+    "min_date": {
+      "type": "string",
+      "title": "Minimum Date",
+      "description": "The minimum date of daily image to fetch from NASA archive",
+      "default": "1995-07-01"
     }
   },
   "additionalProperties": false

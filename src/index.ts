@@ -62,6 +62,22 @@ class CountButtonWidget extends Widget {
   }
 }
 
+// Create ToolbarDateInput widget
+class ToolbarDateInput extends Widget {
+  constructor(onEnter: (dateStr: string) => void) {
+    super({ node: document.createElement('input') });
+    this.addClass('jp-Toolbar-dateInput');
+    const input = this.node as HTMLInputElement;
+    input.placeholder = 'Enter date';
+    input.addEventListener('keydown', (event: KeyboardEvent) => {
+      if (event.key === 'Enter') {
+        onEnter(input.value);
+        input.value = '';
+      }
+    });
+  }
+}
+
 interface INASAResponse {
   copyright: string
   date: string
@@ -85,6 +101,7 @@ class NASAWidget extends Widget {
   readonly refreshbutton: CountButtonWidget
   // API key for the NASA API
   private apiKey: string
+  private minDate: Date
 
   // Add currentDate property
   public currentDate: Date;
@@ -98,6 +115,9 @@ class NASAWidget extends Widget {
     this.addClass('nasa-widget')
 
     this.apiKey = (userSettings?.composite['api_key'] as string) || 'DEMO_KEY'
+
+    const minDateStr = (userSettings?.composite['min_date'] as string) || '1995-07-01';
+    this.minDate = isNaN(Date.parse(minDateStr)) ? new Date('1995-07-01') : new Date(minDateStr);
 
     this.refreshbutton = new CountButtonWidget()
     // this.addWidget(this._button);
@@ -251,12 +271,54 @@ class NASAWidget extends Widget {
    * Get a random date string in YYYY-MM-DD format.
    */
   randomDate(): string {
-    const start = new Date(2010, 1, 1)
+    const start = this.minDate
     const end = new Date()
     const randomDate = new Date(
       start.getTime() + Math.random() * (end.getTime() - start.getTime())
     )
     return randomDate.toISOString().slice(0, 10)
+  }
+
+  // Implement handleDateInput
+  public handleDateInput(dateStr: string): void {
+    const extractedDateStr = this.extractDate(dateStr);
+    let date: Date;
+    if (extractedDateStr) {
+      date = new Date(extractedDateStr);
+    } else {
+      date = new Date();
+    }
+    const today = new Date();
+    if (date > today) {
+      date = today;
+    }
+    if (date < this.minDate) {
+      date = this.minDate;
+    }
+    this.updateNASAImage(this.formatDate(date));
+  }
+
+  // Implement extractDate
+  private extractDate(input: string): string | null {
+    const patterns = [
+      /^(\d{4})(\d{2})(\d{2})$/, // YYYYMMDD
+      /^(\d{2})(\d{2})(\d{2})$/, // YYMMDD
+      /^(\d{4})-(\d{2})-(\d{2})$/ // YYYY-MM-DD
+    ];
+    for (const pattern of patterns) {
+      const match = input.match(pattern);
+      if (match) {
+        let year = match[1];
+        const month = match[2];
+        const day = match[3];
+        if (year.length === 2) {
+          // Assume 19xx for years >= 90 and 20xx for years < 70
+          year = parseInt(year, 10) >= 90 ? '19' + year : '20' + year;
+        }
+        return `${year}-${month}-${day}`;
+      }
+    }
+    return null;
   }
 }
 
@@ -355,6 +417,12 @@ function activate(
         onClick: () => widget.content.updateNASAImage(undefined, true)
       })
       widget.toolbar.addItem('refresh', refreshButton)
+
+      // Add date input widget
+      const dateInput = new ToolbarDateInput((dateStr: string) => {
+        widget.content.handleDateInput(dateStr);
+      });
+      widget.toolbar.addItem('dateInput', dateInput);
 
       // Activate the widget
       app.shell.activateById(widget.id)
