@@ -147,7 +147,7 @@ class NASAWidget extends Widget {
   }
 
   private _onRefresh(emitter: CountButtonWidget, count: ICount): void {
-    this.updateNASAImage()
+    this.updateNASAImage(undefined, true)
     console.log('Hey, a Signal has been received from', emitter)
     console.log(`Image refreshed ${count.clickCount} times.`)
   }
@@ -167,15 +167,18 @@ class NASAWidget extends Widget {
   /**
    * Handle update requests for the widget.
    */
-  async updateNASAImage(date?: string): Promise<void> {
+  async updateNASAImage(date?: string, isRandom: boolean = false): Promise<void> {
 
     // If date is provided, use it; else generate random date
     let fetchDate: string;
     if (date) {
       fetchDate = date;
       this.currentDate = new Date(date);
-    } else {
+    } else if (isRandom) {
       fetchDate = this.randomDate();
+      this.currentDate = new Date(fetchDate);
+    } else {
+      fetchDate = this.formatDate(new Date()); // Use today's date
       this.currentDate = new Date(fetchDate);
     }
 
@@ -196,6 +199,14 @@ class NASAWidget extends Widget {
 
     if (!response.ok) {
       const data = await response.json()
+      if (data.code === 404) {
+        // If data not available for current date, try previous day
+        let prevDate = new Date(this.currentDate);
+        prevDate.setDate(prevDate.getDate() - 1);
+        this.currentDate = prevDate;
+        await this.updateNASAImage(this.formatDate(prevDate), isRandom);
+        return;
+      }
       if (data.error) {
         this.imgtitle.innerText = data.error.message
       } else {
@@ -308,7 +319,7 @@ function activate(
       const refreshButton = new ToolbarButton({
         label: 'Random Day',
         icon: refreshIcon,
-        onClick: () => widget.content.updateNASAImage()
+        onClick: () => widget.content.updateNASAImage(undefined, true)
       })
       widget.toolbar.addItem('refresh', refreshButton)
 
