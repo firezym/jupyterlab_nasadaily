@@ -15,7 +15,7 @@ import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { ILauncher } from '@jupyterlab/launcher'
 import { Widget } from '@lumino/widgets'
 import { ISignal, Signal } from '@lumino/signaling'
-import { refreshIcon, LabIcon } from '@jupyterlab/ui-components'
+import { refreshIcon, caretLeftIcon, ellipsesIcon, caretRightIcon, LabIcon } from '@jupyterlab/ui-components'
 
 const astronautIcon = new LabIcon({
   name: 'jupyterlab_nasadaily:rocket-icon',
@@ -306,25 +306,16 @@ function activate(
 
       // Add refresh button
       const refreshButton = new ToolbarButton({
-        label: 'Refresh',
+        label: 'Random Day',
         icon: refreshIcon,
         onClick: () => widget.content.updateNASAImage()
       })
       widget.toolbar.addItem('refresh', refreshButton)
 
-      // Add 'Today' button
-      const todayButton = new ToolbarButton({
-        label: 'Today',
-        onClick: () => {
-          const today = new Date();
-          widget.content.updateNASAImage(widget.content.formatDate(today));
-        }
-      });
-      widget.toolbar.addItem('today', todayButton);
-
       // Add 'Previous Day' button
       const prevButton = new ToolbarButton({
-        label: 'Previous Day',
+        label: 'Prev Day',
+        icon: caretLeftIcon,
         onClick: () => {
           widget.content.currentDate.setDate(widget.content.currentDate.getDate() - 1);
           widget.content.updateNASAImage(widget.content.formatDate(widget.content.currentDate));
@@ -332,9 +323,21 @@ function activate(
       });
       widget.toolbar.addItem('previous', prevButton);
 
+      // Add 'Today' button
+      const todayButton = new ToolbarButton({
+        label: 'Today',
+        icon: ellipsesIcon,
+        onClick: () => {
+          const today = new Date();
+          widget.content.updateNASAImage(widget.content.formatDate(today));
+        }
+      });
+      widget.toolbar.addItem('today', todayButton);
+
       // Add 'Next Day' button
       const nextButton = new ToolbarButton({
         label: 'Next Day',
+        icon: caretRightIcon,
         onClick: () => {
           widget.content.currentDate.setDate(widget.content.currentDate.getDate() + 1);
           widget.content.updateNASAImage(widget.content.formatDate(widget.content.currentDate));
