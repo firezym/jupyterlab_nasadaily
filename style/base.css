@@ -18,8 +18,7 @@
     position: relative; /* 设为相对定位 */
     width: 100%;
     height: auto;
-  
-    /* overflow-y: scroll;  不能设定纵轴滚动，否则容器绑定的copyright不在最下方 */
+    overflow-y: scroll; /* 允许纵轴滚动 */
   }
   
   .nasa-widget img {
@@ -48,16 +47,14 @@
   /* 版权信息样式 */
   .nasa-copyright {
     margin: 0; /* 重置边距 */
-    position: absolute; /* 新增：设为绝对定位 */
-    bottom: 0; /* 新增：距离容器底部 10px */
-    right: 0; /* 新增：距离容器右侧 10px */
-    color: white; /* 新增：文本颜色为白色 */
-    background-color: rgb(0 0 0 / 50%); /* 新增：半透明黑色背景 */
-    padding: 5px; /* 新增：内边距 */
-  
-    /* border-radius: 5px;   /* 新增：圆角边框 */
+    position: relative; /* 改为相对定位 */
+    color: white; /* 文本颜色为白色 */
+    background-color: rgb(0 0 0 / 90%); /* 半透明黑色背景 */
+    padding: 5px; /* 内边距 */
     text-align: left;
-    font-size: 12px;
+    font-size: 16px;
+    /* overflow-y: scroll; /* 允许纵轴滚动 */
+    /* max-height: 100px; /* 设置最大高度，超出部分滚动 */
   }
   
   .nasa-widget .fa-spinner {
@@ -109,4 +106,3 @@
     background-color: #f2f2f2; /* 鼠标悬停时的背景色 */
     color: #333; /* 鼠标悬停时的文字颜色 */
   }
-  
