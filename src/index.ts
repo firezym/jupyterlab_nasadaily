@@ -315,14 +315,6 @@ function activate(
       }
       widget.content.updateNASAImage()
 
-      // Add refresh button
-      const refreshButton = new ToolbarButton({
-        label: 'Random Day',
-        icon: refreshIcon,
-        onClick: () => widget.content.updateNASAImage(undefined, true)
-      })
-      widget.toolbar.addItem('refresh', refreshButton)
-
       // Add 'Previous Day' button
       const prevButton = new ToolbarButton({
         label: 'Prev Day',
@@ -355,6 +347,14 @@ function activate(
         }
       });
       widget.toolbar.addItem('next', nextButton);
+
+      // Add refresh button
+      const refreshButton = new ToolbarButton({
+        label: 'Random Day',
+        icon: refreshIcon,
+        onClick: () => widget.content.updateNASAImage(undefined, true)
+      })
+      widget.toolbar.addItem('refresh', refreshButton)
 
       // Activate the widget
       app.shell.activateById(widget.id)
