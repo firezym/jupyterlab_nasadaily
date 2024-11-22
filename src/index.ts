@@ -192,8 +192,10 @@ class NASAWidget extends Widget {
       this.img.src = data.url
       this.img.title = data.title
       this.imgtitle.innerText = data.title
-      if (data.copyright) {
-        this.copyright.innerText = `Copyright: ${data.copyright}`
+      // 如果copyright或explainnation一个不为空，则显示
+      // 去掉换行符
+      if (data.copyright || data.explanation) {
+        this.copyright.innerText = `${data.explanation||''} || Copyright: ${data.copyright||'NASA'}`.replace(/[\r\n]/g,'')
       }
     } else {
       this.imgtitle.innerText =
