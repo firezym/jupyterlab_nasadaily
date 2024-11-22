@@ -30,7 +30,7 @@
   }
   
   /* 摘要样式 */
-  .nasa-summary {
+  .nasa-imgtitle {
     z-index: 10; /* 确保最高层级 */
     margin: 0; /* 重置边距 */
     position: absolute; /* 新增：设为绝对定位 */
@@ -57,7 +57,7 @@
   
     /* border-radius: 5px;   /* 新增：圆角边框 */
     text-align: left;
-    font-size: 16px;
+    font-size: 12px;
   }
   
   .nasa-widget .fa-spinner {
