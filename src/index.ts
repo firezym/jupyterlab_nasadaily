@@ -75,8 +75,8 @@ class NASAWidget extends Widget {
   // The image element associated with the widget.
   readonly imageContainer: HTMLDivElement
   readonly img: HTMLImageElement
-  // The summary text element associated with the widget.
-  readonly summary: HTMLParagraphElement
+  // The imgtitle text element associated with the widget.
+  readonly imgtitle: HTMLParagraphElement
   readonly copyright: HTMLParagraphElement
   // 定义 icon 元素
   readonly spinner: HTMLDivElement
@@ -109,9 +109,9 @@ class NASAWidget extends Widget {
     this.imageContainer.appendChild(this.img)
 
     // 添加摘要元素到面板
-    this.summary = document.createElement('p')
-    this.summary.className = 'nasa-summary' // 为摘要元素设置一个类名
-    this.node.appendChild(this.summary)
+    this.imgtitle = document.createElement('p')
+    this.imgtitle.className = 'nasa-imgtitle' // 为摘要元素设置一个类名
+    this.node.appendChild(this.imgtitle)
 
     // 添加版权信息到面板
     this.copyright = document.createElement('p')
@@ -148,7 +148,7 @@ class NASAWidget extends Widget {
 
     // 显示图片和摘要
     this.img.style.display = ''
-    this.summary.style.display = ''
+    this.imgtitle.style.display = ''
     this.copyright.style.display = ''
   }
 
@@ -168,20 +168,20 @@ class NASAWidget extends Widget {
 
     // 隐藏图片和摘要，以防止显示旧内容
     this.img.style.display = 'none'
-    this.summary.style.display = 'none'
+    this.imgtitle.style.display = 'none'
     this.copyright.style.display = 'none'
 
     if (!response.ok) {
       const data = await response.json()
       if (data.error) {
-        this.summary.innerText = data.error.message
+        this.imgtitle.innerText = data.error.message
       } else {
-        this.summary.innerText = response.statusText
+        this.imgtitle.innerText = response.statusText
       }
       // 隐藏旋转图标
       this.refreshbutton.spinner.className = 'fa fa-sync-alt'
       this.spinner.style.display = 'none'
-      this.summary.style.display = ''
+      this.imgtitle.style.display = ''
       return
     }
 
@@ -191,17 +191,17 @@ class NASAWidget extends Widget {
       // Populate the image
       this.img.src = data.url
       this.img.title = data.title
-      this.summary.innerText = data.title
+      this.imgtitle.innerText = data.title
       if (data.copyright) {
         this.copyright.innerText = `Copyright: ${data.copyright}`
       }
     } else {
-      this.summary.innerText =
+      this.imgtitle.innerText =
         'This random fetch is not an image. Please refresh again.'
       // 隐藏旋转图标
       this.refreshbutton.spinner.className = 'fa fa-sync-alt'
       this.spinner.style.display = 'none'
-      this.summary.style.display = ''
+      this.imgtitle.style.display = ''
     }
   }
 
