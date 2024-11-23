@@ -127,11 +127,16 @@ class NASAWidget extends Widget {
     this.addClass('nasa-widget');
 
     this.apiKey = (userSettings?.composite['api_key'] as string) || 'DEMO_KEY';
-    this.openaiKey = (userSettings?.composite['openai_key'] as string) || 'None';
-    this.openaiModel = (userSettings?.composite['openai_model'] as string) || 'gpt-4o-mini';
-    this.prompt = (userSettings?.composite['prompt'] as string) || "Elaborate more on information provided and explain on the professional terms used.";
+    this.openaiKey =
+      (userSettings?.composite['openai_key'] as string) || 'None';
+    this.openaiModel =
+      (userSettings?.composite['openai_model'] as string) || 'gpt-4o-mini';
+    this.prompt =
+      (userSettings?.composite['prompt'] as string) ||
+      'Elaborate more on information provided and explain on the professional terms used.';
 
-    const minDateStr = (userSettings?.composite['min_date'] as string) || '1995-07-01';
+    const minDateStr =
+      (userSettings?.composite['min_date'] as string) || '1995-07-01';
     this.minDate = isNaN(Date.parse(minDateStr))
       ? new Date('1995-07-01')
       : new Date(minDateStr);
@@ -292,7 +297,10 @@ class NASAWidget extends Widget {
         }
         // Create a new AbortController for the current request
         this.fetchController = new AbortController();
-        moreExplanation = await this.fetchMoreExplanation(data, this.fetchController.signal);
+        moreExplanation = await this.fetchMoreExplanation(
+          data,
+          this.fetchController.signal
+        );
         this.copyright.innerHTML = `
         <span style="color: cyan; font-weight: bold;">${data.date || ''}</span> : 
         ${data.explanation || ''}<br>
@@ -311,12 +319,15 @@ class NASAWidget extends Widget {
         ${data.explanation || ''}<br>
         `.replace(/[\r\n]/g, '');
       // Cancel the previous fetchMoreExplanation request if it exists
-        if (this.fetchController) {
-          this.fetchController.abort();
-        }
-        // Create a new AbortController for the current request
-        this.fetchController = new AbortController();
-        moreExplanation = await this.fetchMoreExplanation(data, this.fetchController.signal);
+      if (this.fetchController) {
+        this.fetchController.abort();
+      }
+      // Create a new AbortController for the current request
+      this.fetchController = new AbortController();
+      moreExplanation = await this.fetchMoreExplanation(
+        data,
+        this.fetchController.signal
+      );
       this.imgtitle.innerHTML = `
         <span style="color: cyan; font-weight: bold;">${data.date || ''}</span> :
         <span style="color: skyblue; font-weight: bold;">${data.title || ''}</span> || 
@@ -392,12 +403,15 @@ class NASAWidget extends Widget {
   }
 
   // Implement fetchMoreExplanation
-  private async fetchMoreExplanation(data: INASAResponse, signal: AbortSignal): Promise<string> {
+  private async fetchMoreExplanation(
+    data: INASAResponse,
+    signal: AbortSignal
+  ): Promise<string> {
     let moreExplanation = '';
-    if (this.openaiKey != 'None') {
+    if (this.openaiKey !== 'None') {
       try {
         const openaiResponse = await fetch(
-          `https://api.openai.com/v1/chat/completions`,
+          'https://api.openai.com/v1/chat/completions',
           {
             method: 'POST',
             headers: {
@@ -416,14 +430,14 @@ class NASAWidget extends Widget {
             signal: signal
           }
         );
-  
+
         if (!openaiResponse.ok) {
           console.error('OpenAI API error:', openaiResponse.statusText);
           return '';
         }
-  
+
         const openaiData = await openaiResponse.json();
-  
+
         if (
           openaiData &&
           openaiData.choices &&
@@ -433,13 +447,15 @@ class NASAWidget extends Widget {
         ) {
           // 如果explanation中有```html ... ```则提取其中的内容
           const htmlPattern = /```html([\s\S]*?)```/g;
-          const matches = openaiData.choices[0].message.content.match(htmlPattern);
+          const matches =
+            openaiData.choices[0].message.content.match(htmlPattern);
           if (matches) {
             for (const match of matches) {
-              moreExplanation += match.replace(/```html/g, '').replace(/```/g, '');
+              moreExplanation += match
+                .replace(/```html/g, '')
+                .replace(/```/g, '');
             }
-          }
-          else{
+          } else {
             moreExplanation = openaiData.choices[0].message.content;
           }
         } else {
@@ -452,14 +468,12 @@ class NASAWidget extends Widget {
           console.error('Error fetching from OpenAI:', error);
         }
       }
-    }
-    else {
+    } else {
       console.log('OpenAI API key not provided.');
     }
-    
+
     return moreExplanation;
   }
-
 }
 
 /**
