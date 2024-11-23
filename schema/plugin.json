@@ -1,6 +1,6 @@
 {
   "jupyter.lab.shortcuts": [],
-  "title": "NASA Daily Image",
+  "title": "NASA Daily",
   "description": "Settings for NASA Daily Image",
   "type": "object",
   "jupyter.lab.setting-icon": "jupyterlab_nasadaily:rocket-icon",
@@ -16,6 +16,24 @@
       "title": "Minimum Date",
       "description": "The minimum date of daily image to fetch from NASA archive",
       "default": "1995-07-01"
+    },
+    "openai_key": {
+      "type": "string",
+      "title": "OpenAI API Key",
+      "description": "Your API key for OpenAI data access.",
+      "default": "None"
+    },
+    "openai_model": {
+      "type": "string",
+      "title": "OpenAI LLM Model",
+      "description": "The model to use for OpenAI text generation.",
+      "default": "gpt-4o-mini"
+    },
+    "prompt": {
+      "type": "string",
+      "title": "LLM Prompt",
+      "description": "Ask the LLM to translate or explain more about the image's information.",
+      "default": "Elaborate more on information provided and explain on the professional terms used."
     }
   },
   "additionalProperties": false
