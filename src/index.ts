@@ -108,6 +108,9 @@ class NASAWidget extends Widget {
   // API key for the NASA API
   private apiKey: string;
   private minDate: Date;
+  private openaiKey: string;
+  private openaiModel: string;
+  private prompt: string;
 
   // Add currentDate property
   public currentDate: Date;
@@ -121,9 +124,11 @@ class NASAWidget extends Widget {
     this.addClass('nasa-widget');
 
     this.apiKey = (userSettings?.composite['api_key'] as string) || 'DEMO_KEY';
+    this.openaiKey = (userSettings?.composite['openai_key'] as string) || 'None';
+    this.openaiModel = (userSettings?.composite['openai_model'] as string) || 'gpt-4o-mini';
+    this.prompt = (userSettings?.composite['prompt'] as string) || "Elaborate more on information provided and explain on the professional terms used.";
 
-    const minDateStr =
-      (userSettings?.composite['min_date'] as string) || '1995-07-01';
+    const minDateStr = (userSettings?.composite['min_date'] as string) || '1995-07-01';
     this.minDate = isNaN(Date.parse(minDateStr))
       ? new Date('1995-07-01')
       : new Date(minDateStr);
@@ -227,6 +232,11 @@ class NASAWidget extends Widget {
     this.img.style.display = 'none';
     this.imgtitle.style.display = 'none';
     this.copyright.style.display = 'none';
+    let moreExplanation = '';
+
+    //清空html内容
+    this.imgtitle.innerHTML = '';
+    this.copyright.innerHTML = '';
 
     if (!response.ok) {
       const data = await response.json();
@@ -268,19 +278,36 @@ class NASAWidget extends Widget {
       ) {
         this.copyright.innerHTML = `
         <span style="color: cyan; font-weight: bold;">${data.date || ''}</span> : 
-        ${data.explanation || ''} || 
-        <em>Copyright: ${data.copyright || 'NASA'}</em> || 
+        ${data.explanation || ''}<br>
+        <em>Copyright: ${data.copyright || 'NASA'} || 
         <a href="${data.url}" target="_blank">Image Link</a> ||
-        <a href="${data.hdurl}" target="_blank">HD Image Link</a>
+        <a href="${data.hdurl}" target="_blank">HD Image Link</a></em>
+        `.replace(/[\r\n]/g, '');
+        moreExplanation = await this.fetchMoreExplanation(data);
+        this.copyright.innerHTML = `
+        <span style="color: cyan; font-weight: bold;">${data.date || ''}</span> : 
+        ${data.explanation || ''}<br>
+        ${moreExplanation ? '<hr>' + moreExplanation + '<hr>' : ''}
+        <em>Copyright: ${data.copyright || 'NASA'} ||
+        <a href="${data.url}" target="_blank">Image Link</a> ||
+        <a href="${data.hdurl}" target="_blank">HD Image Link</a></em>
         `.replace(/[\r\n]/g, '');
       }
     } else if (data.media_type === 'video') {
-      console.log('This is a video. Please refresh again.');
+      console.log('This is a video. Click link to view.');
       this.imgtitle.innerHTML = `
         <span style="color: cyan; font-weight: bold;">${data.date || ''}</span> :
         <span style="color: skyblue; font-weight: bold;">${data.title || ''}</span> || 
         <a href="${data.url}" target="_blank" style="color: blue; font-weight: bold;">Video Link</a> <br>
-        ${data.explanation || ''}
+        ${data.explanation || ''}<br>
+        `.replace(/[\r\n]/g, '');
+      moreExplanation = await this.fetchMoreExplanation(data);
+      this.imgtitle.innerHTML = `
+        <span style="color: cyan; font-weight: bold;">${data.date || ''}</span> :
+        <span style="color: skyblue; font-weight: bold;">${data.title || ''}</span> || 
+        <a href="${data.url}" target="_blank" style="color: blue; font-weight: bold;">Video Link</a> <br>
+        ${data.explanation || ''}<br>
+        ${moreExplanation ? '<hr>' + moreExplanation + '<hr>' : ''}
         `.replace(/[\r\n]/g, '');
       this.refreshbutton.spinner.className = 'fa fa-sync-alt';
       this.spinner.style.display = 'none';
@@ -348,6 +375,72 @@ class NASAWidget extends Widget {
     }
     return null;
   }
+
+  // Implement fetchMoreExplanation
+  private async fetchMoreExplanation(data: INASAResponse): Promise<string> {
+    let moreExplanation = '';
+    if (this.openaiKey != 'None') {
+      try {
+        const openaiResponse = await fetch(
+          `https://api.openai.com/v1/chat/completions`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${this.openaiKey}`
+            },
+            body: JSON.stringify({
+              model: this.openaiModel,
+              messages: [
+                {
+                  role: 'user',
+                  content: `${this.prompt}\n\n------\n${data.title}. ${data.explanation}. ${this.prompt}\n------\n`
+                }
+              ]
+            })
+          }
+        );
+  
+        if (!openaiResponse.ok) {
+          console.error('OpenAI API error:', openaiResponse.statusText);
+          return '';
+        }
+  
+        const openaiData = await openaiResponse.json();
+  
+        if (
+          openaiData &&
+          openaiData.choices &&
+          openaiData.choices.length > 0 &&
+          openaiData.choices[0].message &&
+          openaiData.choices[0].message.content
+        ) {
+          // 如果explanation中有```html ... ```则提取其中的内容
+          const htmlPattern = /```html([\s\S]*?)```/g;
+          const matches = openaiData.choices[0].message.content.match(htmlPattern);
+          if (matches) {
+            for (const match of matches) {
+              moreExplanation += match.replace(/```html/g, '').replace(/```/g, '');
+            }
+          }
+          else{
+            moreExplanation = openaiData.choices[0].message.content;
+          }
+        } else {
+          console.error('Invalid OpenAI response format:', openaiData);
+        }
+      } catch (error) {
+        console.error('Error fetching from OpenAI:', error);
+      }
+    }
+    else {
+      console.log('OpenAI API key not provided.');
+    }
+    
+    
+
+    return moreExplanation;
+  }
 }
 
 /**
@@ -391,7 +484,7 @@ function activate(
         const content = new NASAWidget(mysettings);
         widget = new MainAreaWidget({ content });
         widget.id = 'nasa-pic';
-        widget.title.label = 'NASA Picture';
+        widget.title.label = 'NASA Daily';
         widget.title.icon = astronautIcon; // imageIcon
         widget.title.closable = true;
       }
