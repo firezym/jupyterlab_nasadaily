@@ -115,6 +115,9 @@ class NASAWidget extends Widget {
   // Add currentDate property
   public currentDate: Date;
 
+  // Add a controller to manage fetchMoreExplanation requests
+  private fetchController: AbortController | null = null;
+
   /**
    * Construct a new NASA widget.
    */
@@ -283,7 +286,13 @@ class NASAWidget extends Widget {
         <a href="${data.url}" target="_blank">Image Link</a> ||
         <a href="${data.hdurl}" target="_blank">HD Image Link</a></em>
         `.replace(/[\r\n]/g, '');
-        moreExplanation = await this.fetchMoreExplanation(data);
+        // Cancel the previous fetchMoreExplanation request if it exists
+        if (this.fetchController) {
+          this.fetchController.abort();
+        }
+        // Create a new AbortController for the current request
+        this.fetchController = new AbortController();
+        moreExplanation = await this.fetchMoreExplanation(data, this.fetchController.signal);
         this.copyright.innerHTML = `
         <span style="color: cyan; font-weight: bold;">${data.date || ''}</span> : 
         ${data.explanation || ''}<br>
@@ -301,7 +310,13 @@ class NASAWidget extends Widget {
         <a href="${data.url}" target="_blank" style="color: blue; font-weight: bold;">Video Link</a> <br>
         ${data.explanation || ''}<br>
         `.replace(/[\r\n]/g, '');
-      moreExplanation = await this.fetchMoreExplanation(data);
+      // Cancel the previous fetchMoreExplanation request if it exists
+        if (this.fetchController) {
+          this.fetchController.abort();
+        }
+        // Create a new AbortController for the current request
+        this.fetchController = new AbortController();
+        moreExplanation = await this.fetchMoreExplanation(data, this.fetchController.signal);
       this.imgtitle.innerHTML = `
         <span style="color: cyan; font-weight: bold;">${data.date || ''}</span> :
         <span style="color: skyblue; font-weight: bold;">${data.title || ''}</span> || 
@@ -377,7 +392,7 @@ class NASAWidget extends Widget {
   }
 
   // Implement fetchMoreExplanation
-  private async fetchMoreExplanation(data: INASAResponse): Promise<string> {
+  private async fetchMoreExplanation(data: INASAResponse, signal: AbortSignal): Promise<string> {
     let moreExplanation = '';
     if (this.openaiKey != 'None') {
       try {
@@ -397,7 +412,8 @@ class NASAWidget extends Widget {
                   content: `${this.prompt}\n\n------\n${data.title}. ${data.explanation}. ${this.prompt}\n------\n`
                 }
               ]
-            })
+            }),
+            signal: signal
           }
         );
   
@@ -430,17 +446,20 @@ class NASAWidget extends Widget {
           console.error('Invalid OpenAI response format:', openaiData);
         }
       } catch (error) {
-        console.error('Error fetching from OpenAI:', error);
+        if ((error as Error).name === 'AbortError') {
+          console.log('Fetch aborted');
+        } else {
+          console.error('Error fetching from OpenAI:', error);
+        }
       }
     }
     else {
       console.log('OpenAI API key not provided.');
     }
     
-    
-
     return moreExplanation;
   }
+
 }
 
 /**
