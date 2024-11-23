@@ -133,7 +133,7 @@ class NASAWidget extends Widget {
       (userSettings?.composite['openai_model'] as string) || 'gpt-4o-mini';
     this.prompt =
       (userSettings?.composite['prompt'] as string) ||
-      'Elaborate more on information provided and explain on the professional terms used.';
+      "This is the description of an image from NASA's Astronomy Picture of the Day. Elaborate more on relevant scientific discoveries, theories, narratives, or anecdotes behind the image and its description. Explain any technical or professional terms and names in simple language for better understanding. Generate an HTML snippet using only the simplest formatting elements, such as <b> for bold, <i> for italics, <p> for paragraphs, and <br> for line breaks. Avoid including any styles, colors, fonts, or size adjustments. Keep the structure clean and minimal.";
 
     const minDateStr =
       (userSettings?.composite['min_date'] as string) || '1995-07-01';
