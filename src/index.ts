@@ -428,7 +428,7 @@ class NASAWidget extends Widget {
               messages: [
                 {
                   role: 'user',
-                  content: `${this.prompt}\n\n------\nTitle: ${data.title}\nDescription: ${data.explanation}\n------\n`
+                  content: `${this.prompt}\n\n------\nTitle: ${data.title} || ${data.date}\nDescription: ${data.explanation}\n------\n`
                 }
               ]
             }),
