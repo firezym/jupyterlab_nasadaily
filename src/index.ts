@@ -289,11 +289,13 @@ class NASAWidget extends Widget {
         data.url ||
         data.hdurl
       ) {
+        const page_url = `https://apod.nasa.gov/apod/ap${this.transformDate(data.date)}.html`;
         this.copyright.innerHTML = `
         <span style="color: cyan; font-weight: bold;">${data.date || ''}</span> : 
         ${data.explanation || ''}<br>
         <em>Copyright: ${data.copyright || 'NASA'} || 
-        <a href="${data.url}" target="_blank">Image Link</a> ||
+        <a href="${page_url}" target="_blank">Page Link</a> || 
+        <a href="${data.url}" target="_blank">Image Link</a> || 
         <a href="${data.hdurl}" target="_blank">HD Image Link</a></em>
         `.replace(/[\r\n]/g, '');
         // Cancel the previous fetchMoreExplanation request if it exists
@@ -306,20 +308,24 @@ class NASAWidget extends Widget {
           data,
           this.fetchController.signal
         );
+
         this.copyright.innerHTML = `
         <span style="color: cyan; font-weight: bold;">${data.date || ''}</span> : 
         ${data.explanation || ''}<br>
         ${moreExplanation ? '<hr>' + moreExplanation + '<hr>' : ''}
         <em>Copyright: ${data.copyright || 'NASA'} ||
-        <a href="${data.url}" target="_blank">Image Link</a> ||
+        <a href="${page_url}" target="_blank">Page Link</a> || 
+        <a href="${data.url}" target="_blank">Image Link</a> || 
         <a href="${data.hdurl}" target="_blank">HD Image Link</a></em>
         `.replace(/[\r\n]/g, '');
       }
     } else if (data.media_type === 'video') {
       console.log('This is a video. Click link to view.');
+      const page_url = `https://apod.nasa.gov/apod/ap${this.transformDate(data.date)}.html`;
       this.imgtitle.innerHTML = `
         <span style="color: cyan; font-weight: bold;">${data.date || ''}</span> :
         <span style="color: skyblue; font-weight: bold;">${data.title || ''}</span> || 
+        <a href="${page_url}" target="_blank" style="color: blue; font-weight: bold;">Page Link</a> || 
         <a href="${data.url}" target="_blank" style="color: blue; font-weight: bold;">Video Link</a> <br>
         ${data.explanation || ''}<br>
         `.replace(/[\r\n]/g, '');
@@ -336,6 +342,7 @@ class NASAWidget extends Widget {
       this.imgtitle.innerHTML = `
         <span style="color: cyan; font-weight: bold;">${data.date || ''}</span> :
         <span style="color: skyblue; font-weight: bold;">${data.title || ''}</span> || 
+        <a href="${page_url}" target="_blank" style="color: blue; font-weight: bold;">Page Link</a> || 
         <a href="${data.url}" target="_blank" style="color: blue; font-weight: bold;">Video Link</a> <br>
         ${data.explanation || ''}<br>
         ${moreExplanation ? '<hr>' + moreExplanation + '<hr>' : ''}
@@ -405,6 +412,11 @@ class NASAWidget extends Widget {
       }
     }
     return null;
+  }
+
+  // Transform date string from YYYY-MM-DD to YYMMDD
+  private transformDate(dateStr: string): string {
+    return dateStr.slice(2).replace(/-/g, '');
   }
 
   // Implement fetchMoreExplanation
