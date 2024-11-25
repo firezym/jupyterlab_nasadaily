@@ -410,7 +410,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jupyterlab/launcher@npm:^4.3.1":
+"@jupyterlab/launcher@npm:^4.0.0":
   version: 4.3.1
   resolution: "@jupyterlab/launcher@npm:4.3.1"
   dependencies:
@@ -2893,7 +2893,7 @@ __metadata:
   dependencies:
     "@jupyterlab/application": ^4.0.0
     "@jupyterlab/builder": ^4.0.0
-    "@jupyterlab/launcher": ^4.3.1
+    "@jupyterlab/launcher": ^4.0.0
     "@jupyterlab/settingregistry": ^4.0.0
     "@types/json-schema": ^7.0.11
     "@types/react": ^18.0.26
