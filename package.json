@@ -1,6 +1,6 @@
 {
     "name": "jupyterlab_nasadaily",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "JupyterLab Extension to Show Astronomy Picture of the Day from NASA",
     "keywords": [
         "jupyter",
