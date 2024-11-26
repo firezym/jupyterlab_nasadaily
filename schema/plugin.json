@@ -2,7 +2,6 @@
   "jupyter.lab.shortcuts": [],
   "title": "NASA Daily",
   "description": "Settings for NASA Daily Image",
-  "type": "object",
   "jupyter.lab.setting-icon": "jupyterlab_nasadaily:rocket-icon",
   "properties": {
     "api_key": {
@@ -16,6 +15,12 @@
       "title": "Minimum Date",
       "description": "The minimum date of daily image to fetch from NASA archive",
       "default": "1995-07-01"
+    },
+    "use_openai": {
+      "type": "boolean",
+      "title": "Use OpenAI Language Model",
+      "description": "Enable OpenAI LLM for image description elaboration.",
+      "default": true
     },
     "openai_key": {
       "type": "string",
@@ -36,5 +41,6 @@
       "default": "This is the description of an image from NASA's Astronomy Picture of the Day. Elaborate more on relevant scientific discoveries, theories, narratives, or anecdotes behind the image and its description. Explain any technical or professional terms and names in simple language for better understanding. Generate an HTML snippet using only the simplest formatting elements, such as <b> for bold, <i> for italics, <p> for paragraphs, and <br> for line breaks. Avoid including any styles, colors, fonts, or size adjustments. Keep the structure clean and minimal."
     }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "type": "object"
 }

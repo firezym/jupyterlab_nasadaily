@@ -113,6 +113,7 @@ class NASAWidget extends Widget {
   // API key for the NASA API
   private apiKey: string;
   private minDate: Date;
+  private useOpenAI: boolean;
   private openaiKey: string;
   private openaiModel: string;
   private prompt: string;
@@ -132,6 +133,7 @@ class NASAWidget extends Widget {
     this.addClass('nasa-widget');
 
     this.apiKey = (userSettings?.composite['api_key'] as string) || 'DEMO_KEY';
+    this.useOpenAI = (userSettings?.composite['use_openai'] as boolean) ?? true;
     this.openaiKey =
       (userSettings?.composite['openai_key'] as string) || 'None';
     this.openaiModel =
@@ -425,7 +427,7 @@ class NASAWidget extends Widget {
     signal: AbortSignal
   ): Promise<string> {
     let moreExplanation = '';
-    if (this.openaiKey !== 'None') {
+    if (this.useOpenAI && this.openaiKey !== 'None') {
       try {
         const openaiResponse = await fetch(
           'https://api.openai.com/v1/chat/completions',
@@ -486,7 +488,9 @@ class NASAWidget extends Widget {
         }
       }
     } else {
-      console.log('OpenAI API key not provided.');
+      console.log(
+        'OpenAI elaboration is disabled or OpenAI API key not provided.'
+      );
     }
 
     return moreExplanation;
@@ -528,7 +532,7 @@ function activate(
   // Add an application command
   const command: string = 'nasa:open';
   app.commands.addCommand(command, {
-    label: 'Random NASA Picture',
+    label: 'NASA Daily',
     execute: () => {
       if (!widget || widget.isDisposed) {
         const content = new NASAWidget(mysettings);
